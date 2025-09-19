@@ -1,9 +1,15 @@
-class CastCrew{
-  int id;
-  String name;
-  String subName;
-  String imagePath;
-  String personType;
+class CastCrew {
+  final int? id;
+  final String name;
+  final String subName;
+  final String? imagePath;
+  final String personType;
 
-  CastCrew({this.id, this.name, this.subName, this.imagePath, this.personType});
+  CastCrew({
+    required this.id,
+    required this.name,
+    required this.subName,
+    this.imagePath,
+    required this.personType,
+  });
 }

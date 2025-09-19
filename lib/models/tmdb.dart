@@ -1,4 +1,4 @@
-class Tmdb{
+class Tmdb {
   static const apiKey = "API_KEY";
   static const baseUrl = "https://api.themoviedb.org/3/movie/";
   static const baseImagesUrl = "https://image.tmdb.org/t/p/";

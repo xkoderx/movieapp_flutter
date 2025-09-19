@@ -16,14 +16,14 @@ void main() => runApp(MaterialApp(
 
 class MyMovieApp extends StatefulWidget {
   @override
-  _MyMovieApp createState() => new _MyMovieApp();
+  _MyMovieApp createState() => _MyMovieApp();
 }
 
 class _MyMovieApp extends State<MyMovieApp> {
-  Movie nowPlayingMovies;
-  Movie upcomingMovies;
-  Movie popularMovies;
-  Movie topRatedMovies;
+  Movie? nowPlayingMovies;
+  Movie? upcomingMovies;
+  Movie? popularMovies;
+  Movie? topRatedMovies;
   int heroTag = 0;
   int _currentIndex = 0;
 
@@ -37,7 +37,7 @@ class _MyMovieApp extends State<MyMovieApp> {
   }
 
   void _fetchNowPlayingMovies() async {
-    var response = await http.get(Tmdb.nowPlayingUrl);
+    var response = await http.get(Uri.parse(Tmdb.nowPlayingUrl));
     var decodeJson = jsonDecode(response.body);
     setState(() {
       nowPlayingMovies = Movie.fromJson(decodeJson);
@@ -45,7 +45,7 @@ class _MyMovieApp extends State<MyMovieApp> {
   }
 
   void _fetchUpcomingMovies() async {
-    var response = await http.get(Tmdb.upcomingUrl);
+    var response = await http.get(Uri.parse(Tmdb.upcomingUrl));
     var decodedJson = jsonDecode(response.body);
     setState(() {
       upcomingMovies = Movie.fromJson(decodedJson);
@@ -53,7 +53,7 @@ class _MyMovieApp extends State<MyMovieApp> {
   }
 
   void _fetchPopularMovies() async {
-    var response = await http.get(Tmdb.popularUrl);
+    var response = await http.get(Uri.parse(Tmdb.popularUrl));
     var decodedJson = jsonDecode(response.body);
     setState(() {
       popularMovies = Movie.fromJson(decodedJson);
@@ -61,7 +61,7 @@ class _MyMovieApp extends State<MyMovieApp> {
   }
 
   void _fetchTopRatedMovies() async {
-    var response = await http.get(Tmdb.topRatedUrl);
+    var response = await http.get(Uri.parse(Tmdb.topRatedUrl));
     var decodedJson = jsonDecode(response.body);
     setState(() {
       topRatedMovies = Movie.fromJson(decodedJson);
@@ -71,12 +71,14 @@ class _MyMovieApp extends State<MyMovieApp> {
   Widget _buildCarouselSlider() => CarouselSlider(
         items: nowPlayingMovies == null
             ? <Widget>[Center(child: CircularProgressIndicator())]
-            : nowPlayingMovies.results
+            : nowPlayingMovies!.results
                 .map((movieItem) => _buildMovieItem(movieItem))
                 .toList(),
-        autoPlay: false,
-        height: 240.0,
-        viewportFraction: 0.5,
+        options: CarouselOptions(
+          autoPlay: false,
+          height: 240.0,
+          viewportFraction: 0.5,
+        ),
       );
 
   Widget _buildMovieItem(Results movieItem) {
@@ -86,9 +88,11 @@ class _MyMovieApp extends State<MyMovieApp> {
         elevation: 15.0,
         child: InkWell(
             onTap: () {
-              Navigator.push(context, MaterialPageRoute(
-                builder: (context) => MovieDetail(movie: movieItem,)
-              ));
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => MovieDetail(movie: movieItem),
+                  ));
             },
             child: Hero(
               tag: heroTag,
@@ -125,7 +129,7 @@ class _MyMovieApp extends State<MyMovieApp> {
             ],
           )));
 
-  Widget _buildMoviesListView(Movie movie, String movieListTitle) => Container(
+  Widget _buildMoviesListView(Movie? movie, String movieListTitle) => Container(
         height: 258.0,
         padding: EdgeInsets.only(top: 10.0, bottom: 10.0),
         decoration: BoxDecoration(
@@ -228,23 +232,23 @@ class _MyMovieApp extends State<MyMovieApp> {
         bottomNavigationBar: BottomNavigationBar(
           fixedColor: Colors.lightBlue,
           currentIndex: _currentIndex,
-          onTap: (int index){
-           setState(() {
-             _currentIndex = index;
-           });
+          onTap: (int index) {
+            setState(() {
+              _currentIndex = index;
+            });
           },
           items: [
             BottomNavigationBarItem(
               icon: Icon(Icons.local_movies),
-              title: Text('All Movies'),
+              label: 'All Movies',
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.tag_faces),
-              title: Text('Tickets'),
+              label: 'Tickets',
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.person),
-              title: Text('Account'),
+              label: 'Account',
             )
           ],
         ));
